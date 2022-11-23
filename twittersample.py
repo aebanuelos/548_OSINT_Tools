@@ -57,7 +57,8 @@ def get_users_tweets(inputUsername):
     except Exception as e:
         print(f'\nPlease ensure the account exists, it is spelled right, and it has public settings.\nYou entered: "{inputUsername}"\nError: {e}')
 
-'''
+''' 
+Model for how pyqt5 interprets table data
 data = {'col1':['1','2','3','4'],
         'col2':['1','2','1','3'],
         'col3':['1','1','2','1']}

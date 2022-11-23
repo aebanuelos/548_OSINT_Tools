@@ -4,8 +4,9 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 #soup = BeautifulSoup(html_doc, 'html.parser')
+#def savePage(url, pagepath='page'):
 
-def savePage(url, pagepath='page'):
+def savePage(url, file_save_name):
     def savenRename(soup, pagefolder, session, url, tag, inner):
         if not os.path.exists(pagefolder): # create only once
             os.mkdir(pagefolder)
@@ -27,15 +28,23 @@ def savePage(url, pagepath='page'):
     session = requests.Session()
     response = session.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
-    path, _ = os.path.splitext(pagepath)
-    pagefolder = path+'_files' # page contents folder
+    desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
+    #path, _ = os.path.splitext(pagepath)
+    path, _ = os.path.splitext(desktop)
+    #pagefolder = path+'_files' # page contents folder
+
+    parent_dir = desktop
+    directory = file_save_name+"_files"
+    new_path = os.path.join(parent_dir, directory)
+    os.mkdir(new_path)
+
     tags_inner = {'img': 'src', 'link': 'href', 'script': 'src'} # tag&inner tags to grab
     for tag, inner in tags_inner.items(): # saves resource files and rename refs
-        savenRename(soup, pagefolder, session, url, tag, inner)
+        savenRename(soup, new_path, session, url, tag, inner)
     with open(path+'.html', 'wb') as file: # saves modified html doc
         file.write(soup.prettify('utf-8'))
 
-#url_name = input("Please Enter a URL to Scrape: ")
-#file_save_name = input("Please Enter a folder name: ")
-
-#savePage(url_name, file_save_name)
+# url_name = input("Please Enter a URL to Scrape: ")
+# file_save_name = input("Please Enter a folder name: ")
+#
+# savePage(url_name, file_save_name)

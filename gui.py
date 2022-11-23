@@ -49,30 +49,13 @@ class Window2(QMainWindow):
         self.show()
 
 
-    # # Create table
-    def createTable(self, dict, rowCount):
-
-        vbox = QVBoxLayout()
-        tableWidget = QTableWidget()
-        # Row count
-        tableWidget.setRowCount(rowCount)
-        # Column count
-        tableWidget.setColumnCount(2)
-        tableWidget.setItem(0, 0, QTableWidgetItem("Username"))
-        tableWidget.setItem(0, 0, QTableWidgetItem("Links to Accounts"))
-        for x in range(rowCount):
-            tableWidget.setItem(x+1, 0, QTableWidgetItem(dict["Username"][x]))
-            tableWidget.setItem(x+1, 1, QTableWidgetItem(dict["Links"][x]))
-        vbox.addWidget(tableWidget)
-        self.setLayout(vbox)
-        self.show()
-
-
     def clickMethod(self):
         tweets = twittersample.get_users_tweets(self.responseBox.text())
         rowcount = len(tweets['Username'])
         try:
-            self.createTable(tweets, rowcount)
+            self.table = TableView(tweets, rowcount, 2)
+            self.table.show()
+            self.hide()
         except Exception as e:
             print(e)
 
@@ -81,6 +64,32 @@ class Window2(QMainWindow):
         self.w = Window()
         self.w.show()
         self.hide()
+
+########################################################################################################################
+# TEMP
+class TableView(QTableWidget):
+    def __init__(self, data, *args):
+        QTableWidget.__init__(self, *args)
+        self.data = data
+        self.setData()
+        self.resizeColumnsToContents()
+        self.resizeRowsToContents()
+        self.top = 100
+        self.left = 100
+        self.width = 680
+        self.height = 500
+        self.setGeometry(self.top, self.left, self.width, self.height)
+
+    def setData(self):
+        horHeaders = []
+        for n, key in enumerate(sorted(self.data.keys())):
+            horHeaders.append(key)
+            for m, item in enumerate(self.data[key]):
+                newitem = QTableWidgetItem(item)
+                self.setItem(m, n, newitem)
+        self.setHorizontalHeaderLabels(horHeaders)
+########################################################################################################################
+
 
 # Window utilized for the Google Maps OSINT Tool
 class Window3(QMainWindow):
@@ -128,7 +137,7 @@ class Window3(QMainWindow):
         self.w.show()
         self.hide()
 
-
+########################################################################################################################
 # Window utilized for the Web Scraping Tool
 class Window4(QMainWindow):
     def __init__(self):
@@ -147,16 +156,24 @@ class Window4(QMainWindow):
         self.webURLLabel = QLabel(self)
         self.webURLLabel.setText("Please enter web URL: ")
         self.responseBox = QLineEdit(self)
+        self.folderLabel = QLabel(self)
+        self.folderLabel.setText("Please enter folder name to save content: ")
+        self.responseFolder = QLineEdit(self)
 
         self.webURLLabel.move(225, 145)
         self.webURLLabel.resize(300, 40)
         self.responseBox.move(225, 175)
         self.responseBox.resize(200, 32)
 
+        self.folderLabel.move(225, 195)
+        self.folderLabel.resize(300, 40)
+        self.responseFolder.move(225, 225)
+        self.responseFolder.resize(200, 32)
+
         pybutton = QPushButton('OK', self)
         pybutton.clicked.connect(self.clickMethod)
         pybutton.resize(200, 32)
-        pybutton.move(225, 215)
+        pybutton.move(225, 260)
 
         toMain = QPushButton('Back', self)
         toMain.clicked.connect(self.returnToMain)
@@ -166,15 +183,35 @@ class Window4(QMainWindow):
         self.show()
 
     def clickMethod(self):
-        folder_name = f"{self.responseBox.text()}_folder"
-        tweets = beautifulSoupCollect.savePage(self.responseBox.text(), folder_name)
-        # print('Your name: ' + self.responseBox.text())
-        print('Your name: ' + tweets)
+        try:
+            beautifulSoupCollect.savePage(self.responseBox.text(), self.responseFolder.text())
+        except Exception as e:
+            print(e)
+        self.done = DoneWindow()
+        self.done.show()
+        self.hide()
 
     def returnToMain(self):
         self.w = Window()
         self.w.show()
         self.hide()
+
+
+class DoneWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.title = "Finished Web Scraping"
+        self.top = 100
+        self.left = 100
+        self.width = 680
+        self.height = 500
+        self.setGeometry(self.top, self.left, self.width, self.height)
+        self.label = QLabel("Your webscraping has finished and the content may be seen on your desktop screen!", self)
+        self.label.move(20, 30)
+        self.label.resize(650, 40)
+
+
+########################################################################################################################
 
 
 class Window(QMainWindow):
