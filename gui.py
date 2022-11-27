@@ -6,6 +6,7 @@ from pytz import unicode
 
 import twittersample
 import beautifulSoupCollect
+import googlescrape_func
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
@@ -106,19 +107,45 @@ class Window3(QMainWindow):
         self.label.resize(250, 40)
 
         # Text field
-        self.locationLabel = QLabel(self)
-        self.locationLabel.setText("Please enter location: ")
-        self.responseBox = QLineEdit(self)
 
-        self.locationLabel.move(225, 145)
-        self.locationLabel.resize(300, 40)
-        self.responseBox.move(225, 175)
-        self.responseBox.resize(200, 32)
+        self.locationLabel1 = QLabel(self)
+        self.locationLabel1.setText("Please enter coordinates: ")
+        self.responseBox1 = QLineEdit(self)
 
-        pybutton = QPushButton('OK', self)
+        self.locationLabel1.move(225, 145)
+        self.locationLabel1.resize(300, 40)
+        self.responseBox1.move(225, 175)
+        self.responseBox1.resize(200, 32)
+
+
+
+        self.locationLabel2 = QLabel(self)
+        self.locationLabel2.setText("Please enter search radius in meters: ")
+        self.responseBox2 = QLineEdit(self)
+
+        self.locationLabel2.move(225, 95)
+        self.locationLabel2.resize(300, 40)
+        self.responseBox2.move(225, 125)
+        self.responseBox2.resize(200, 32)
+
+
+
+        self.locationLabel3 = QLabel(self)
+        self.locationLabel3.setText("Please enter search term: ")
+        self.responseBox3 = QLineEdit(self)
+
+        self.locationLabel3.move(225, 45)
+        self.locationLabel3.resize(300, 40)
+        self.responseBox3.move(225, 75)
+        self.responseBox3.resize(200, 32)
+
+
+
+
+        pybutton = QPushButton('Gather Data', self) 
         pybutton.clicked.connect(self.clickMethod)
         pybutton.resize(200, 32)
-        pybutton.move(225, 215)
+        pybutton.move(225, 250)
 
         toMain = QPushButton('Back', self)
         toMain.clicked.connect(self.returnToMain)
@@ -128,14 +155,49 @@ class Window3(QMainWindow):
         self.show()
 
     def clickMethod(self):
-        tweets = twittersample.get_users_tweets(self.responseBox.text())
-        # print('Your name: ' + self.responseBox.text())
-        print('Your name: ' + tweets)
-
+        places = googlescrape_func.googleplace(self.responseBox1.text(), self.responseBox3.text(), self.responseBox2.text()) #location, search_string, distance
+        #print('Your name: ' + self.responseBox1.text())
+        #print('Your name: ' + self.responseBox2.text())
+        #print('Your name: ' + self.responseBox3.text())
+        self.done = DoneWindowe()
+        self.done.show()
+        self.hide()
+    
     def returnToMain(self):
         self.w = Window()
         self.w.show()
         self.hide()
+
+class DoneWindowe(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.title = "Finished Gathering Data"
+        self.top = 100
+        self.left = 100
+        self.width = 680
+        self.height = 500
+        self.setGeometry(self.top, self.left, self.width, self.height)
+        self.label = QLabel("A list of relevant locations has been generated and will be available in the same directory as this script", self)
+        self.label.move(20, 30)
+        self.label.resize(650, 40)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ########################################################################################################################
 # Window utilized for the Web Scraping Tool
