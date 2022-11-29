@@ -7,14 +7,14 @@ from tweepy import OAuthHandler
 # Verification Keys
 
 # API keys that you saved earlier
-api_key = "vjUxsGbLepiUmJVLC3b4tcOiH"
-api_secrets = "r5GauosrDEgePMo8arG5MHPmj1AKigzEXTpo6MFbmQc8vyZasD"
-bearer_token = "AAAAAAAAAAAAAAAAAAAAABUljQEAAAAAh43j7j58%2BF%2F2pIQ3t3CxGHq35Ds%3DRBDmN3jywb8MfGW4LzQOpLSd2kJmxkgqa0iXvZOewBp7xeusao"
-access_token = "1591932689698930689-4MrsgOFsDdFXuHQyVH0TOUpWvtELwT"
-access_secret = "yovRN3rprloNTijJE5pcY2W96MmJk6OKRvA7tIHe0zGXN"
+api_key = "***"
+api_secrets = "***"
+bearer_token = "***"
+access_token = "***"
+access_secret = "***"
 
-client_id = "ZHloa2wzSk5RTkJMR0JLVk5DRmk6MTpjaQ"
-client_secret = "M9JgQo4ptTWGKaG16rNt_uVUz_FK2amfzmeZ03h-HgxJavkfqj"
+client_id = "***"
+client_secret = "***"
 
 # goated Client documentation: https://docs.tweepy.org/en/stable/client.html#
 
