@@ -4,6 +4,7 @@ import sys
 import searchtweets
 from pytz import unicode
 
+import exifreader
 import twittersample
 import beautifulSoupCollect
 import googlescrape_func
@@ -49,7 +50,6 @@ class Window2(QMainWindow):
 
         self.show()
 
-
     def clickMethod(self):
         tweets = twittersample.get_users_tweets(self.responseBox.text())
         rowcount = len(tweets['Username'])
@@ -60,11 +60,11 @@ class Window2(QMainWindow):
         except Exception as e:
             print(e)
 
-
     def returnToMain(self):
         self.w = Window()
         self.w.show()
         self.hide()
+
 
 ########################################################################################################################
 # TEMP
@@ -89,6 +89,8 @@ class TableView(QTableWidget):
                 newitem = QTableWidgetItem(item)
                 self.setItem(m, n, newitem)
         self.setHorizontalHeaderLabels(horHeaders)
+
+
 ########################################################################################################################
 
 
@@ -117,8 +119,6 @@ class Window3(QMainWindow):
         self.responseBox1.move(225, 175)
         self.responseBox1.resize(200, 32)
 
-
-
         self.locationLabel2 = QLabel(self)
         self.locationLabel2.setText("Please enter search radius in meters: ")
         self.responseBox2 = QLineEdit(self)
@@ -127,8 +127,6 @@ class Window3(QMainWindow):
         self.locationLabel2.resize(300, 40)
         self.responseBox2.move(225, 125)
         self.responseBox2.resize(200, 32)
-
-
 
         self.locationLabel3 = QLabel(self)
         self.locationLabel3.setText("Please enter search term: ")
@@ -139,10 +137,7 @@ class Window3(QMainWindow):
         self.responseBox3.move(225, 75)
         self.responseBox3.resize(200, 32)
 
-
-
-
-        pybutton = QPushButton('Gather Data', self) 
+        pybutton = QPushButton('Gather Data', self)
         pybutton.clicked.connect(self.clickMethod)
         pybutton.resize(200, 32)
         pybutton.move(225, 250)
@@ -155,18 +150,20 @@ class Window3(QMainWindow):
         self.show()
 
     def clickMethod(self):
-        places = googlescrape_func.googleplace(self.responseBox1.text(), self.responseBox3.text(), self.responseBox2.text()) #location, search_string, distance
-        #print('Your name: ' + self.responseBox1.text())
-        #print('Your name: ' + self.responseBox2.text())
-        #print('Your name: ' + self.responseBox3.text())
+        places = googlescrape_func.googleplace(self.responseBox1.text(), self.responseBox3.text(),
+                                               self.responseBox2.text())  # location, search_string, distance
+        # print('Your name: ' + self.responseBox1.text())
+        # print('Your name: ' + self.responseBox2.text())
+        # print('Your name: ' + self.responseBox3.text())
         self.done = DoneWindowe()
         self.done.show()
         self.hide()
-    
+
     def returnToMain(self):
         self.w = Window()
         self.w.show()
         self.hide()
+
 
 class DoneWindowe(QMainWindow):
     def __init__(self):
@@ -177,26 +174,11 @@ class DoneWindowe(QMainWindow):
         self.width = 680
         self.height = 500
         self.setGeometry(self.top, self.left, self.width, self.height)
-        self.label = QLabel("A list of relevant locations has been generated and will be available in the same directory as this script", self)
+        self.label = QLabel(
+            "A list of relevant locations has been generated and will be available in the same directory as this script",
+            self)
         self.label.move(20, 30)
         self.label.resize(650, 40)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ########################################################################################################################
@@ -273,6 +255,89 @@ class DoneWindow(QMainWindow):
         self.label.resize(650, 40)
 
 
+# Exif Reader
+########################################################################################################################
+
+
+class Ui_Form(object):
+    def setupUi(self, Form):
+        Form.setObjectName("EXIF OSINT Tool")
+        Form.setWindowTitle("EXIF Metadata OSINT Tool")
+        self.top = 100
+        self.left = 100
+        self.width = 680
+        self.height = 500
+        Form.setGeometry(self.top, self.left, self.width, self.height)
+
+        self.title = QLabel("EXIF Image Metadata Reader:", Form)
+        self.title.move(20, 30)
+        self.title.resize(450, 40)
+
+        self.label = QLabel("Please enter image file title: ", Form)
+        self.label.move(225, 210)
+        self.label.resize(450, 30)
+
+        self.responseBox = QLineEdit(Form)
+        self.responseBox.move(225, 235)
+        self.responseBox.resize(200, 32)
+
+        self.pushButton = QtWidgets.QPushButton(Form)
+        self.pushButton.setGeometry(QtCore.QRect(80, 130, 113, 32))
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton.move(225, 270)
+
+        self.retranslateUi(Form)
+        QtCore.QMetaObject.connectSlotsByName(Form)
+
+        toMain = QPushButton('Back', Form)
+        toMain.clicked.connect(self.returnToMain)
+        toMain.resize(100, 30)
+        toMain.move(550, 10)
+
+    def retranslateUi(self, Form):
+        _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "Form"))
+        self.pushButton.setText(_translate("Form", "Browse File"))
+        self.pushButton.clicked.connect(self.pushButton_handler)
+
+    def pushButton_handler(self):
+        print("Button pressed")
+        self.open_dialog_box()
+
+    def open_dialog_box(self):
+        filename = QFileDialog.getOpenFileName()
+        path = filename[0]
+        imageName = self.responseBox.text()
+        print(path)
+        try:
+            exifreader.extractData(path, imageName)
+        except Exception as e:
+            print(e)
+        self.done = EXIFDoneWindow()
+        self.done.show()
+
+    # For some reason this doesn't work
+    # def returnToMain(self, Form):
+    def returnToMain(self):
+        self.w = Window()
+        self.w.show()
+
+
+class EXIFDoneWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.title = "Finished EXIF Scraping"
+        self.top = 100
+        self.left = 100
+        self.width = 680
+        self.height = 500
+        self.setGeometry(self.top, self.left, self.width, self.height)
+        self.label = QLabel(
+            "Your EXIF Metadata Scraping has finished and the content may be seen on your desktop screen!", self)
+        self.label.move(20, 30)
+        self.label.resize(650, 40)
+
+
 ########################################################################################################################
 
 
@@ -340,10 +405,29 @@ class Window(QMainWindow):
         self.pushButton3.setToolTip("<h3>Start Third OSINT Tool</h3>")
 
         ################################################################################################################
+        # Button 4
+
+        self.pushButton4 = QPushButton("EXIF Metadata Reader", self)
+        # self.pushButton.setStyleSheet("QPushButton"
+        #                                  "{"
+        #                                  "background-color : yellow;"
+        #                                  "}"
+        #                                  "QPushButton::pressed"
+        #                                  "{"
+        #                                  "background-color : red;"
+        #                                  "}"
+        #                                  )
+        self.pushButton4.resize(235, 25)
+        self.pushButton4.move(225, 275)
+        self.pushButton4.setFont(QFont('Courier New', 13))
+        self.pushButton4.setToolTip("<h3>Start Fourth OSINT Tool</h3>")
+
+        ################################################################################################################
 
         self.pushButton.clicked.connect(self.window2)
         self.pushButton2.clicked.connect(self.window3)
         self.pushButton3.clicked.connect(self.window4)
+        self.pushButton4.clicked.connect(self.window5)
         self.main_window()
 
     def main_window(self):
@@ -367,6 +451,16 @@ class Window(QMainWindow):
         self.w = Window4()
         self.w.show()
         self.hide()
+
+    def window5(self):
+        self.Form = QtWidgets.QWidget()
+        self.ui = Ui_Form()
+        self.ui.setupUi(self.Form)
+        self.Form.show()
+        self.hide()
+        # self.w = exifWindow()
+        # self.w.show()
+        # self.hide()
 
 
 if __name__ == "__main__":
