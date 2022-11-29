@@ -273,7 +273,7 @@ class Ui_Form(object):
         self.title.move(20, 30)
         self.title.resize(450, 40)
 
-        self.label = QLabel("Please enter image file title: ", Form)
+        self.label = QLabel("Please enter metadata file title: ", Form)
         self.label.move(225, 210)
         self.label.resize(450, 30)
 
